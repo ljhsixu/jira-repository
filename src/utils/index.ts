@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export const cleanObject = (object) => {
+export const cleanObject = (object: object) => {
   console.log(object);
   const result = { ...object };
   Object.keys(object).forEach((v) => {
@@ -11,7 +11,7 @@ export const cleanObject = (object) => {
   return result;
 };
 
-export const useDebounce = (value, delay) => {
+export const useDebounce = <V>(value: V, delay: number) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
   useEffect(() => {
     const timeout = setTimeout(() => setDebouncedValue(value), delay);
