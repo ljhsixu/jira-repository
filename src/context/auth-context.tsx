@@ -1,6 +1,8 @@
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import * as auth from "auth-provider";
 import { User } from "../screens/project-list/Search-panel";
+import * as http from "http";
+import { request } from "../utils/http";
 interface AuthForm {
   username: string;
   password: string;
@@ -16,7 +18,16 @@ const AuthContext = React.createContext<
   | undefined
 >(undefined);
 AuthContext.displayName = "AuthContext";
-
+// 初始化user
+const bootstrapUser = async () => {
+  let user = null;
+  const token = auth.getToken();
+  if (token) {
+    const data = await request("me", { token });
+    user = data.user;
+  }
+  return user;
+};
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const login = (form: AuthForm) =>
@@ -24,6 +35,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const register = (form: AuthForm) =>
     auth.register(form).then((user) => setUser(user));
   const logout = () => auth.logout().then(() => setUser(null));
+  useEffect(() => {
+    bootstrapUser().then((res) => {
+      setUser(res);
+    });
+  }, []);
   return (
     <AuthContext.Provider
       children={children}

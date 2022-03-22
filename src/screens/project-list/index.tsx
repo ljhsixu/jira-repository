@@ -4,7 +4,8 @@ import { List } from "./list";
 import { useEffect, useState } from "react";
 import { cleanObject, useDebounce } from "../../utils";
 import * as qs from "qs";
-const apiUrl = `http://localhost:3001`;
+import { useHttp } from "../../utils/http";
+const apiUrl = process.env.REACT_APP_API_URL;
 export const ProjectListScreen = () => {
   const [param, setParam] = useState({
     name: "",
@@ -13,21 +14,12 @@ export const ProjectListScreen = () => {
   const [users, setUsers] = useState([]);
   const debouncedParam = useDebounce(param, 2000);
   const [list, setList] = useState([]);
+  const client = useHttp();
   useEffect(() => {
-    fetch(
-      `${apiUrl}/projects?${qs.stringify(cleanObject(debouncedParam))}`
-    ).then(async (res) => {
-      if (res.ok) {
-        setList(await res.json());
-      }
-    });
+    client("projects", { params: cleanObject(debouncedParam) }).then(setList);
   }, [debouncedParam]);
   useEffect(() => {
-    fetch(`${apiUrl}/users`).then(async (res) => {
-      if (res.ok) {
-        setUsers(await res.json());
-      }
-    });
+    client("users").then(setUsers);
   }, []);
   return (
     <div>
