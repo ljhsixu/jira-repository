@@ -47,3 +47,7 @@ export const useHttp = () => {
   return (...[url, config]: Parameters<typeof request>) =>
     request(url, { ...config, token: user?.token });
 };
+
+// 联合类型
+
+// 类型别名
